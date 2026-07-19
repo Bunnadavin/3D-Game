@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Three.js 3D Game</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="alternate icon" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+Khmer:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./node_modules/three/build/three.module.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <main id="game-shell" aria-label="Three.js 3D game">
+      <canvas id="game-canvas"></canvas>
+      <div id="cursor-point" aria-hidden="true"></div>
+      <div id="level-up-banner" class="level-up-banner" aria-live="polite"></div>
+      <section id="game-hud" aria-label="Character health">
+        <div class="hud-row">
+          <span>Lv</span>
+          <div class="health-track">
+            <div id="player-exp-bar" class="health-fill player-exp"></div>
+          </div>
+          <strong id="player-level-text">1</strong>
+        </div>
+        <div class="hud-row">
+          <span>HP</span>
+          <div class="health-track">
+            <div id="player-health-bar" class="health-fill player-health"></div>
+          </div>
+          <strong id="player-health-text" title="Hero health">100 / 100</strong>
+        </div>
+        <div class="hud-row hud-row-atk">
+          <span>ATK</span>
+          <strong id="player-attack-text" class="atk-text" title="Hero attack power">25</strong>
+        </div>
+        <div class="hud-row hud-row-exp">
+          <span>EXP</span>
+          <strong id="player-exp-text" class="exp-text">0 / 40</strong>
+        </div>
+        <div class="hud-row">
+          <span>Dash</span>
+          <div class="health-track">
+            <div id="skill-cooldown-bar" class="health-fill skill-cooldown"></div>
+          </div>
+          <strong id="skill-cooldown-text">Ready</strong>
+        </div>
+      </section>
+      <div id="game-status">Loading 3D scene...</div>
+
+      <section id="main-menu" class="game-menu is-hidden" aria-label="Main menu">
+        <div class="menu-panel">
+          <p class="menu-eyebrow">Three.js Arena</p>
+          <h1 class="menu-title">Blade Survivor</h1>
+          <p class="menu-subtitle">Fight waves of enemies and survive as long as you can.</p>
+          <div class="menu-skin-picker">
+            <p class="menu-skin-label">Hero Skin</p>
+            <div id="skin-options" class="skin-options" role="radiogroup" aria-label="Hero skin color"></div>
+          </div>
+          <div class="menu-skin-picker">
+            <p class="menu-skin-label">Cloth Color</p>
+            <div id="cloth-options" class="skin-options" role="radiogroup" aria-label="Hero cloth color"></div>
+          </div>
+          <div class="menu-mode-picker">
+            <p class="menu-skin-label">Game Mode</p>
+            <div id="mode-options" class="mode-options" role="radiogroup" aria-label="Game mode"></div>
+            <p id="mode-description" class="mode-description">Take damage from enemies</p>
+          </div>
+          <div class="menu-audio-settings">
+            <p class="menu-skin-label">Audio</p>
+            <label class="audio-slider-row" for="music-volume">
+              <span>Music</span>
+              <input id="music-volume" class="audio-slider" type="range" min="0" max="100" value="32" step="1" />
+              <strong id="music-volume-value">32%</strong>
+            </label>
+            <label class="audio-slider-row" for="sfx-volume">
+              <span>SFX</span>
+              <input id="sfx-volume" class="audio-slider" type="range" min="0" max="100" value="85" step="1" />
+              <strong id="sfx-volume-value">85%</strong>
+            </label>
+          </div>
+          <button id="menu-play-btn" class="menu-btn menu-btn-primary" type="button">
+            Play
+          </button>
+          <ul class="menu-controls">
+            <li><strong>WASD</strong> Move</li>
+            <li><strong>Shift</strong> Run / Dash</li>
+            <li><strong>Space</strong> Jump / Fly</li>
+            <li><strong>Mouse</strong> Look &amp; Attack</li>
+            <li><strong>E</strong> Explosion skill</li>
+            <li><strong>Scroll</strong> Zoom in / out</li>
+            <li><strong>Esc</strong> Pause menu</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="pause-menu" class="game-menu is-hidden" aria-label="Pause menu">
+        <div class="menu-panel">
+          <p class="menu-eyebrow">Game Paused</p>
+          <h2 class="menu-title">Pause Menu</h2>
+          <p class="menu-subtitle">Adjust settings or resume the battle.</p>
+          <div class="menu-skin-picker">
+            <p class="menu-skin-label">Hero Skin</p>
+            <div id="pause-skin-options" class="skin-options" role="radiogroup" aria-label="Hero skin color"></div>
+          </div>
+          <div class="menu-skin-picker">
+            <p class="menu-skin-label">Cloth Color</p>
+            <div id="pause-cloth-options" class="skin-options" role="radiogroup" aria-label="Hero cloth color"></div>
+          </div>
+          <div class="menu-mode-picker">
+            <p class="menu-skin-label">Game Mode</p>
+            <div id="pause-mode-options" class="mode-options" role="radiogroup" aria-label="Game mode"></div>
+            <p id="pause-mode-description" class="mode-description">Take damage from enemies</p>
+          </div>
+          <div class="menu-audio-settings">
+            <p class="menu-skin-label">Audio</p>
+            <label class="audio-slider-row" for="pause-music-volume">
+              <span>Music</span>
+              <input id="pause-music-volume" class="audio-slider" type="range" min="0" max="100" value="32" step="1" />
+              <strong id="pause-music-volume-value">32%</strong>
+            </label>
+            <label class="audio-slider-row" for="pause-sfx-volume">
+              <span>SFX</span>
+              <input id="pause-sfx-volume" class="audio-slider" type="range" min="0" max="100" value="85" step="1" />
+              <strong id="pause-sfx-volume-value">85%</strong>
+            </label>
+          </div>
+          <div class="menu-actions">
+            <button id="menu-resume-btn" class="menu-btn menu-btn-primary" type="button">
+              Continue
+            </button>
+            <button id="menu-pause-main-btn" class="menu-btn menu-btn-secondary" type="button">
+              Main Menu
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="game-over-menu" class="game-menu is-hidden" aria-label="Game over menu">
+        <div class="menu-panel">
+          <p class="menu-eyebrow">You Lost</p>
+          <h2 class="menu-title">Defeated</h2>
+          <p class="menu-subtitle">Your hero ran out of health and lost 10 levels. Try again or return to the main menu.</p>
+          <div class="menu-actions">
+            <button id="menu-restart-btn" class="menu-btn menu-btn-primary" type="button">
+              Try Again
+            </button>
+            <button id="menu-main-btn" class="menu-btn menu-btn-secondary" type="button">
+              Main Menu
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

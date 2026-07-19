@@ -1,0 +1,16 @@
+{
+  "name": "three-js-3d-game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/dev-server.js",
+    "generate-khmer-audio": "node scripts/generate-khmer-audio.js"
+  },
+  "dependencies": {
+    "three": "^0.165.0"
+  },
+  "devDependencies": {
+    "edge-tts-universal": "^1.4.0"
+  }
+}
